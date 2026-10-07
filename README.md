@@ -6,10 +6,12 @@ Ela entra sozinha quando você pede algo como "anima esse botão", "faz o menu a
 
 ## O que tem dentro
 
-- **Quando animar (e quando não animar):** propósito, frequência e expectativa de quem usa.
+- **Quando animar (e quando não animar):** propósito, frequência, expectativa de quem usa e o tipo de página (que convence ou ferramenta de trabalho).
+- **Tese de movimento:** um plano curto antes de codar, separando o momento principal da marca do que é só feedback.
+- **Material pelo significado:** quando usar deslocamento, blur, máscara, View Transitions ou cor.
 - **Números de referência:** durações por tipo de interação, curvas de movimento e molas.
 - **Desempenho e acessibilidade:** o que pode ser animado sem travar e como respeitar quem pede menos movimento.
-- **12 receitas, em CSS puro e em React (Motion):** botão que afunda ao clicar, troca de texto no botão, altura que acompanha o conteúdo, indicador que desliza entre abas, cartão que vira modal, passos com direção, modal e gaveta, popover, lista que adiciona e remove itens, imagem com blur-in, entrada ao rolar a página e toast.
+- **14 receitas, em CSS puro e em React (Motion):** botão que afunda ao clicar, troca de texto no botão, altura que acompanha o conteúdo, indicador que desliza entre abas, cartão que vira modal, passos com direção, modal e gaveta, popover, lista que adiciona e remove itens, imagem com blur-in, entrada ao rolar a página, toast, transição entre telas (View Transitions) e revelação com máscara.
 - **O que evitar** e um **checklist** antes de entregar.
 
 O conteúdo completo está em [`skills/animacoes-web/SKILL.md`](skills/animacoes-web/SKILL.md).
@@ -39,6 +41,15 @@ Para usar só em um projeto, coloque a pasta em `.claude/skills/animacoes-web/` 
 ## Como testar
 
 Abra um projeto e peça: *"adiciona uma animação no botão de enviar do formulário"*. O Claude deve usar a skill, escolher uma duração curta e respeitar `prefers-reduced-motion`.
+
+## Para ir além
+
+Esta skill foca em movimento. Para um sistema completo de design (tipografia, cor, layout, auditoria e polimento), vale instalar também o **[Impeccable](https://github.com/pbakaus/impeccable)**, de Paul Bakaus. Ele tem um comando dedicado a animação (`/impeccable animate`) e combina bem com esta skill.
+
+## Créditos e referências
+
+- Princípios de movimento inspirados no material de animação do [Impeccable](https://github.com/pbakaus/impeccable) (Apache 2.0), de Paul Bakaus, reescritos e adaptados em português.
+- Receitas de microinteração inspiradas nos padrões ensinados no curso [Animations on the Web](https://animations.dev), de Emil Kowalski. Nenhum código do curso foi copiado.
 
 ---
 

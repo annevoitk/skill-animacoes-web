@@ -12,6 +12,21 @@ Animação boa é aquela que a pessoa sente, mas não percebe. Ela explica o que
 1. **Qual é o propósito?** Só anime se for para: dar feedback a uma ação, mostrar mudança de estado, manter a orientação espacial (de onde o elemento veio) ou criar um momento de marca que acontece poucas vezes. "Fica bonito" sozinho não é motivo.
 2. **Com que frequência a pessoa vê isso?** Quanto mais frequente, mais curta e discreta. Ações repetidas centenas de vezes por dia (atalho de teclado, abrir menu de comando, digitar) **não devem ter animação**.
 3. **A pessoa está esperando por isso?** Se a animação fica entre a pessoa e o que ela quer, ela tem que ser rápida o bastante para não ser notada como espera.
+4. **Que tipo de página é essa?**
+   - **Página que convence** (landing page, portfólio, campanha, site institucional): o movimento pode ter voz e personalidade. Prefira **uma sequência marcante e bem ensaiada** a fazer cada seção "aparecer ao rolar" do mesmo jeito.
+   - **Ferramenta de trabalho** (painel, formulário, app, área logada): o movimento serve a feedback, estado e continuidade. Transições rápidas, nada de coreografia na abertura da página.
+   - **App nativo (iOS / Android):** siga as diretrizes de movimento da plataforma e a opção "Reduzir movimento" do sistema. As receitas web abaixo não se aplicam.
+
+### Escreva a tese de movimento antes de codar
+
+Em 4 linhas, antes de implementar:
+
+- **Momento principal:** a única sequência ou interação que merece ser "assinada" (se houver). Ela tem que nascer do conceito desta marca e desta página. "Fade subindo", "card que levanta no hover", parallax e "aparecer ao rolar" genéricos **não são** tese.
+- **Continuidade:** quais mudanças de estado, layout ou navegação precisam ser explicadas pelo movimento.
+- **Feedback:** quais botões e resultados precisam de confirmação visual.
+- **Orçamento:** quais efeitos são caros (blur, sombra, canvas) e com que frequência rodam.
+
+Teste final de cada animação: **se eu remover, perde-se significado ou caráter?** Se só perde enfeite, remova. Animação sem propósito é dívida.
 
 ## 2. Números que funcionam
 
@@ -23,9 +38,23 @@ Animação boa é aquela que a pessoa sente, mas não percebe. Ela explica o que
 | Elemento saindo | 120–200 ms (mais rápido que a entrada) | `ease-in` ou `ease-out` |
 | Modal, gaveta, mudança de layout | 250–400 ms | mola sem quique |
 | Elemento grande atravessando a tela | 400–500 ms | `ease-in-out` ou mola |
-| Momento de marca (hero, onboarding) | até ~800 ms | livre |
+| Momento de marca (hero, onboarding) | 500–800 ms | livre, mas autoral |
 
-**Regra geral: quase nada passa de 300 ms.** Se parece lento, provavelmente está.
+**Regra geral: quase nada passa de 300 ms.** Se parece lento, provavelmente está. A duração deve acompanhar a distância percorrida e a importância da mudança: movimento curto e consequência pequena pedem pouco tempo. Feedback demorado parece lentidão do sistema.
+
+### Escolha o "material" pelo significado
+
+`transform` e `opacity` são a base confiável, não a paleta inteira. Escolha o tipo de efeito pelo que a transição comunica:
+
+| O que comunicar | Material |
+|---|---|
+| Continuidade e relação (isto virou aquilo) | elemento compartilhado (`layoutId`), técnica FLIP, View Transitions, deslocamento no espaço |
+| Foco e profundidade | blur, `backdrop-filter`, luz e sombra (em áreas limitadas) |
+| Revelação e composição | máscaras, `clip-path`, recorte, oclusão controlada |
+| Matéria e energia da marca | cor, posição de gradiente, textura, distorção (quando o estilo e o aparelho aguentam) |
+| Estado e feedback | a menor mudança que deixa causa e efeito inconfundíveis |
+
+**Não empilhe técnicas para impressionar.** Uma ideia forte, levada até o fim no momento principal, e estados de apoio discretos costumam bastar.
 
 ### Curvas (cubic-bezier)
 
@@ -64,18 +93,22 @@ transition={{ type: "spring", duration: 0.45, bounce: 0.15 }} // algo mais expre
 
 ## 4. Acessibilidade
 
-- **Sempre respeite `prefers-reduced-motion`.** Para quem pede menos movimento, troque deslocamento e escala por um simples fade curto, ou corte a animação.
+- **Sempre respeite `prefers-reduced-motion`, com uma alternativa pensada.** Movimento reduzido significa **menos e mais suave, não zero**. Tire ou diminua o deslocamento, a escala, o parallax e as voltas. **Mantenha** fades, mudanças de cor e de estado que confirmam uma ação: a pessoa ainda precisa ver que o clique funcionou.
 
 ```css
+/* Padrão: cada animação define a versão reduzida dela */
+.toast { transition: transform 300ms var(--ease-out), opacity 300ms var(--ease-out); }
+.toast:not(.aberto) { transform: translateY(100%); opacity: 0; }
+
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
-  }
+  .toast { transition: opacity 200ms ease; }        /* sem deslocamento, mantém o fade */
+  .toast:not(.aberto) { transform: none; }
+  html { scroll-behavior: auto; }
+  .parallax, .loop-decorativo { animation: none; }  /* decoração some de vez */
 }
 ```
+
+Evite o atalho de zerar todas as durações com `* { transition-duration: 0.01ms !important }`: ele apaga também o feedback que dava sentido à interação.
 
 ```js
 // Motion (React): desliga movimentos e mantém fades
@@ -84,6 +117,7 @@ import { MotionConfig } from "motion/react";
 ```
 
 - Nada pisca mais de 3 vezes por segundo.
+- Respeite também preferências de reprodução automática e de som. Todo loop que não é essencial para quando sai da tela ou quando a aba fica em segundo plano.
 - Animação nunca pode ser o único jeito de entender uma informação.
 - Elementos interativos continuam clicáveis durante a animação (não bloqueie a interface esperando a animação terminar).
 
@@ -334,6 +368,39 @@ document.querySelectorAll(".reveal").forEach((el) => io.observe(el));
 
 Entra de baixo (ou do canto) com `y: 100% → 0` + opacidade em mola de ~0.35 s, sai mais rápido com opacidade. Vários toasts empilham com `layout` para os de cima se reacomodarem. Pausa o tempo de fechar quando o mouse está em cima.
 
+### 5.13 Transição entre telas ou estados (View Transitions)
+
+Quando o que importa é a continuidade (uma miniatura que vira a página do produto, um filtro que reorganiza a lista), a View Transitions API faz o navegador animar do estado antigo para o novo.
+
+```js
+function mudarEstado(atualizar) {
+  if (!document.startViewTransition || matchMedia("(prefers-reduced-motion: reduce)").matches) return atualizar();
+  document.startViewTransition(atualizar);
+}
+```
+
+```css
+.miniatura-produto { view-transition-name: produto-42; }   /* mesmo nome no elemento de origem e de destino */
+::view-transition-group(*) { animation-duration: 300ms; animation-timing-function: var(--ease-out); }
+```
+
+Para navegação entre páginas de um site estático: `@view-transition { navigation: auto; }` no CSS das duas páginas. Navegadores sem suporte simplesmente trocam sem animar, então não precisa de alternativa.
+
+### 5.14 Revelação com máscara (clip-path)
+
+Para um título ou imagem de destaque no momento principal: em vez de "subir com fade", o conteúdo é descoberto por uma máscara.
+
+```css
+.revela-mascara { clip-path: inset(0 100% 0 0); transition: clip-path 700ms var(--ease-in-out); }
+.revela-mascara.visivel { clip-path: inset(0 0 0 0); }
+@media (prefers-reduced-motion: reduce) {
+  .revela-mascara { clip-path: none; transition: opacity 300ms ease; opacity: 0; }
+  .revela-mascara.visivel { opacity: 1; }
+}
+```
+
+Use em **um** elemento por página. Repetido em todas as seções, vira o mesmo tique genérico que se quer evitar.
+
 ## 6. O que evitar
 
 - Animar tudo. Escolha poucos momentos e faça-os bem.
@@ -345,15 +412,19 @@ Entra de baixo (ou do canto) com `y: 100% → 0` + opacidade em mola de ~0.35 s,
 - Spinners para esperas menores que ~300 ms (pisca e some). Mostre só depois desse tempo.
 - Mudar o layout da página enquanto a pessoa lê (conteúdo que empurra outro conteúdo).
 - Animar ao carregar a página elementos que estão abaixo da dobra.
+- Transformar cada seção em uma "lista com escalonamento". Stagger só quando o conteúdo é de fato uma lista, e com atraso total limitado.
+- Instalar uma biblioteca nova para um efeito que o CSS ou o que o projeto já usa resolvem.
 
 ## 7. Checklist antes de entregar
 
+- [ ] A tese de movimento foi escrita e o momento principal é específico desta marca, não genérico.
 - [ ] Cada animação tem um propósito claro (feedback, estado, orientação ou marca).
+- [ ] Interromper no meio (clicar de novo, fechar antes de abrir) e repetir muitas vezes funciona sem engasgo.
 - [ ] Ações frequentes são rápidas (≤ 200 ms) ou não animam.
 - [ ] Só `transform`, `opacity` (e `filter` com moderação) estão sendo animados.
 - [ ] Entradas usam `ease-out` ou mola sem quique. Nada `linear` em movimento.
 - [ ] Saídas são mais rápidas que entradas.
-- [ ] `prefers-reduced-motion` respeitado.
+- [ ] `prefers-reduced-motion` reduz o movimento sem apagar o feedback e as mudanças de estado.
 - [ ] Interface continua utilizável durante a animação e sem JavaScript.
 - [ ] Testado no celular e com rolagem rápida.
 - [ ] Modais e gavetas fecham com Esc e clique fora, e devolvem o foco.
@@ -362,6 +433,6 @@ Entra de baixo (ou do canto) com `y: 100% → 0` + opacidade em mola de ~0.35 s,
 
 1. Leia o CSS/JS do projeto e **reaproveite** as curvas, durações e variáveis que já existem. Não crie um segundo sistema de animação.
 2. Se o projeto é estático (sem React), use as versões em CSS/JS puro. Não instale Motion só para isso.
-3. Se o projeto já usa outra biblioteca de animação (GSAP, Motion, Anime.js), siga com ela.
+3. Se o projeto já usa outra biblioteca de animação (GSAP, Motion, Anime.js), siga com ela. Para sequências que podem ser interrompidas ou valores dinâmicos sem biblioteca, use a Web Animations API (`elemento.animate()`).
 4. Centralize durações e curvas em variáveis (`--ease-out`, `--dur-rapida`) para ajustar tudo de uma vez.
 5. Ao terminar, descreva para a pessoa, em linguagem simples, o que passou a se mover e por quê.
