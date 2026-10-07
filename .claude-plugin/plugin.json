@@ -1,0 +1,9 @@
+{
+  "name": "animacoes-web",
+  "description": "Skill de animações e microinterações para a web: princípios, números de referência e receitas em CSS e React (Motion).",
+  "version": "1.0.0",
+  "author": { "name": "Anne Lise Rosales" },
+  "homepage": "https://github.com/annevoitk/skill-animacoes-web",
+  "repository": "https://github.com/annevoitk/skill-animacoes-web",
+  "keywords": ["skills", "animação", "motion", "frontend", "ui"]
+}

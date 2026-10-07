@@ -1,0 +1,13 @@
+{
+  "name": "animacoes-web",
+  "description": "Skills de design e animação para a web, por Anne Lise Rosales",
+  "owner": { "name": "Anne Lise Rosales" },
+  "plugins": [
+    {
+      "name": "animacoes-web",
+      "description": "Skill de animações e microinterações para a web: princípios, números de referência e receitas em CSS e React (Motion).",
+      "version": "1.0.0",
+      "source": "./"
+    }
+  ]
+}
